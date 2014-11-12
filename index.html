@@ -1,135 +1,44 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Zpeng : Blog">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Zpeng by pzhp</title>
+    <title>Zpeng</title>
   </head>
 
   <body>
 
-    <header>
-      <div class="container">
-        <h1>Zpeng</h1>
-        <h2>Blog</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/pzhp">View on GitHub</a>
 
-        <section id="downloads">
-          <a href="https://github.com/pzhp" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+          <h1 id="project_title">Zpeng</h1>
+          <h2 id="project_tagline">Blog</h2>
 
-    <div class="container">
-      <section id="main_content">
-        <h2>
-<a id="lua编译实践-词法分析" class="anchor" href="#lua%E7%BC%96%E8%AF%91%E5%AE%9E%E8%B7%B5-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lua编译实践-词法分析：</h2>
+        </header>
+    </div>
 
-<p>前言：
-编译实践系列将以lua的词法，语法和语意为标准，用C++实现lua的解释器，会采用编译原理中基本流程：
-词法分析 =&gt; 语法分析 =&gt; 抽象语法树(AST) =&gt; 语意分析(符号表) =&gt; 代码生成（字节码）。当然lua官方解释器采用边读入边生成代码没有所谓的AST。
-主要分成三部分：
-前端词法和语法分析；
-语意分析侧重在lua语言的特性(table, closure, coroutine, bind c/c++)特性的实现，会弱化符号检查；
-Virtual Machine和Garbage Collection；</p>
-
-<p>词法分析：
-先看一道常见的面试题：把字符串转换为整数（即实现atoi），如果考虑到实现基本功能（不含溢出处理），这并不难：依次读入字符取得对应的数字再乘以权重累加即可，正负数也只是加个前置判断而已。</p>
-
-<p>再给道题，判断一段字符串是否满足一下要求：只能以字母或下划线开始，其余部分数字、字母、下划线均可。我相信这个也不难，从头开始扫描字符串，if判断即可。</p>
-
-<p>如果再告诉你一条规则，以 ‘“’ 开头直到遇到 ‘”’结尾，或者以 单引号开头和结尾可判定为字符串常量。</p>
-
-<p>最后，增加判定是运算符（+ - * 、 % &lt;= ...）和分隔符(; , ...)的规则，也就可以识别程序语言中的运算符和分割符了。只不过这里会用到一个小技巧，lua里存在 ".", "..", "..." 当字符判定为"."时，会继续预读入下一个字符再判定， 如果第二个字符是"." 则拿到该字符，结果为".."，继续这么处理第三个字符。可以将这个判断转化为查表。</p>
-
-<p>当完成这几个函数，那么需要考虑什么时候选择解析成数字，什么时候解析成字符串...，其核心在于预先看一两个字符做预判，决定走那条路，这里的预测可以采用标准流的peek, get, putback等函数完成，其基本框架如下：</p>
-
-<div class="highlight highlight-C++"><pre><span class="pl-k">while</span> (<span class="pl-c1">true</span>)
-{       
-        <span class="pl-c"><span class="pl-pdc">//</span> init a single token recognise state</span>
-
-        <span class="pl-s">char</span> ch = <span class="pl-sf">GetNextChar</span>();
-
-        <span class="pl-k">if</span> (<span class="pl-sf">isdigit</span>(ch))
-        {
-            tk = <span class="pl-sf">ProcessNumberState</span>(ch);
-        }
-        <span class="pl-k">else</span> <span class="pl-k">if</span> (<span class="pl-sf">std::isalpha</span>(ch) || ch == <span class="pl-s1"><span class="pl-pds">'</span>_<span class="pl-pds">'</span></span>)
-        {
-            tk = <span class="pl-sf">ProcessIndentifyState</span>(ch);
-        }
-        <span class="pl-k">else</span> <span class="pl-k">if</span> (ch == <span class="pl-s1"><span class="pl-pds">'</span><span class="pl-cce">\'</span><span class="pl-pds">'</span></span> || ch == <span class="pl-s1"><span class="pl-pds">'</span>"<span class="pl-pds">'</span></span>)
-        {
-            tk = <span class="pl-sf">ProcessStringState</span>(ch);
-        }
-        <span class="pl-k">else</span> <span class="pl-k">if</span> (ch == <span class="pl-s1"><span class="pl-pds">'</span>-<span class="pl-pds">'</span></span> &amp;&amp; <span class="pl-sf">PeekNextChar</span>() == <span class="pl-s1"><span class="pl-pds">'</span>-<span class="pl-pds">'</span></span>)
-        {
-            <span class="pl-sf">HandleComemnt</span>(ch);
-            <span class="pl-k">continue</span>;
-        }
-        <span class="pl-k">else</span> <span class="pl-k">if</span> (m_dict.<span class="pl-sf">haveToken</span>(<span class="pl-sf">std::string</span>(<span class="pl-cn">1</span>,ch)))
-        {
-            tk = <span class="pl-sf">ProcessOperatorAndDelim</span>(ch);
-        }
-        <span class="pl-k">else</span>
-        {
-            m_currState = S_Fatal;
-            m_strErrReason = <span class="pl-s1"><span class="pl-pds">"</span>cannot find dispatch method<span class="pl-pds">"</span></span>;
-        }
-}</pre></div>
-
-<p><a href="https://github.com/pzhp/lua_interpretor/tree/master/lua_interpretor">具体源码请参考scanner.cpp</a></p>
-
-<p>既然故事这么简单，那么为什么编译原理类的书会讲正则文法，有限状态自动机（DFA，NFA），搞的那么复杂呢？简单所说，那是为了泛化，满足可配置性，将具体的解析规则提取出来，可以定制。以flex为例，它的工作方式非常类似awk：pattern{action}：</p>
-
-<pre><code>/* 规定DIGIT为0-9的数，如果规定[0-8]，那么9将无法被判定到数字里面 */
-DIGIT             ([0-9])
-HEX_DIGIT         ([0-9a-fA-F])
-HEX_INTEGER       (0[Xx]{HEX_DIGIT}+)
-INTEGER           ({DIGIT}+)
-EXPONENT          ([Ee][-+]?{INTEGER})
-DOUBLE            ({INTEGER}"."{DIGIT}*{EXPONENT}?)
-BEG_STRING        (\"[^"\n]*)
-STRING            ({BEG_STRING}\")
-IDENTIFIER        ([a-zA-Z][a-zA-Z_0-9]*)
-OPERATOR          ([-+/*%=.,;!&lt;&gt;()[\]{}])
-BEG_COMMENT       ("/*")
-END_COMMENT       ("*/")
-SINGLE_COMMENT    ("//"[^\n]*)
-
-/* -------------------- Constants ------------------------------ */
-"true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
-                         return T_BoolConstant; }
-{INTEGER}           { yylval.integerConstant = strtol(yytext, NULL, 10);
-                         return T_IntConstant; }
-{HEX_INTEGER}       { yylval.integerConstant = strtol(yytext, NULL, 16);
-                         return T_IntConstant; }
-{DOUBLE}            { yylval.doubleConstant = atof(yytext);
-                         return T_DoubleConstant; }
-{STRING}            { yylval.stringConstant = _strdup(yytext); 
-                         return T_StringConstant; }
-{BEG_STRING}        { ReportError::UntermString(&amp;yylloc, yytext); }
-
-/* -------------------- Identifiers --------------------------- */
-{IDENTIFIER}        { if (strlen(yytext) &gt; MaxIdentLen)
-                         ReportError::LongIdentifier(&amp;yylloc, yytext);
-                       strncpy(yylval.identifier, yytext, MaxIdentLen);
-                       yylval.identifier[MaxIdentLen] = '\0';
-                       return T_Identifier; }
-</code></pre>
-
-<p><a href="https://github.com/pzhp/Decafe-Compiler">具体源码请参考scanner.l</a></p>
-
-<p>至此，前端词法分析的框架出来，</p>
-
-<p>（如果数字超过其类型溢出，gcc会怎么处理？ 默认情况是int，超出会给warning，并尝试向长整型转）</p>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>test</p>
       </section>
     </div>
 
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
