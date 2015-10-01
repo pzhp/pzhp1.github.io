@@ -6,8 +6,10 @@ categories: C++
 excerpt: c++ type decduction。
 
 ---
+
 * content
 {:toc}
+
 ---
 
 ##1. 类型推导介绍
