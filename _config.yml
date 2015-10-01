@@ -14,7 +14,7 @@ github_username:  Gaohaoyang
 permalink: /:year/:month/:day/:title/
 
 # Build settings
-markdown: maruku
+markdown: redcarpet
 
 paginate: 10
 paginate_path: "page:num"
