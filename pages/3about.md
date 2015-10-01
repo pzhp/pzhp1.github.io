@@ -4,7 +4,6 @@ title: About
 permalink: /about/
 icon: glyphicon-heart
 ---
-
 ### 关于我
 
 
@@ -13,6 +12,7 @@ icon: glyphicon-heart
 ### 联系我
 
 * email：[pengzhengpu@foxmail.com](mailto:{{ site.email }})
+* github: [https://github.com/pzhp]
 
 
 
