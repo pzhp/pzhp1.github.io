@@ -14,10 +14,11 @@ var _hmt = _hmt || [];
   var s = document.getElementsByTagName("script")[0]; 
   s.parentNode.insertBefore(hm, s);
 })();
+You can also replace it with your own site statistics account at http://tongji.baidu.com/.
 ```
 
-* Change the duoshuo comment code in _layouts/default.html.
-like this:
+* Change the duoshuo comment code 
+In _layouts/default.html.
 ```javascript
 var duoshuoQuery = {short_name:"******"};
     (function() {
@@ -29,7 +30,8 @@ var duoshuoQuery = {short_name:"******"};
 })(); 
 ```
 If you don't have one duoshuo's short_name, you can register one at http://duoshuo.com/create-site.
-And in post.html/post.html
+
+In post.html/post.html
 ```javascript
 <div class="ds-thread" data-thread-key="{{ page.id }}" data-title="{{ page.title }}" data-url="***.github.io{{ page.url }}"></div>
 ```
