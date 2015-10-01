@@ -1,0 +1,6 @@
+markdown: rdiscount
+permalink: /:year/:month/:title/
+url: http://pzhp.github.io
+author: zpeng
+pygments: true
+paginate: 24
