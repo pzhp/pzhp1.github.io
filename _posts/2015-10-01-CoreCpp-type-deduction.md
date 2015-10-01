@@ -48,7 +48,5 @@ g(&S::f); // P=T1 (T2::*)(T3*)，A=(void)(S::*)(double*), 自顶向下比对各�
 上面两个例子是C++11以前就支持的类型推导，但C++11及以后的标准新增了许多需要类型推导的形式。
 
 > C++98:  template type deduction(T&/T*, T)
-
 > C++11:  template type deduction(T&&), auto object, decltype, lambda implicit return, lambda capture
-
 > C++14:  auto return type, lambda auto parameter, decltype(auto), l
