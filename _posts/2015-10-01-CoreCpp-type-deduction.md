@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Core C++: type deduction"
-date:   2015-05-18 14:06:05
+date:   2015-10-01 23:06:05
 categories: C++
 excerpt: c++ type decduction。
 ---
