@@ -17,15 +17,15 @@ excerpt: 记录一些好用的前端工具和框架。
 
 ```C++
 
-/*Ex1*/
+	/*Ex1*/
 
-template <typename E, int N>
+	template <typename E, int N>
 
-void f(E(&)[N]);
+	void f(E(&)[N]);
 
-bool b[42];
+	bool b[42];
 
-f(b); // P=E(&)[N], A=bool [42] 比较P和A, 推导出E=bool, N=42，P中的引用修饰表明了推导的方法（数组不会退化转型成指针）
+	f(b); // P=E(&)[N], A=bool [42] 比较P和A, 推导出E=bool, N=42，P中的引用修饰表明了推导的方法（数组不会退化转型成指针）
 
  
 
