@@ -10,8 +10,7 @@ excerpt: 记录一些好用的前端工具和框架。
 
 ---
 
-<ul id="tree" class="ztree"></ul>
-<article class='markdown-body'>
+
 
 
 #Core C++ series: type deduction（类型推导/演绎）
@@ -57,8 +56,3 @@ g(&S::f); // P=T1 (T2::*)(T3*)，A=(void)(S::*)(double*), 自顶向下比对各�
 > C++11:  template type deduction(T&&), auto object, decltype, lambda implicit return, lambda capture
 
 > C++14:  auto return type, lambda auto parameter, decltype(auto), l
-
-
-</article>
-<script type="text/javascript" src="http://i5ting.github.io/git-quick-start/preview/js/jquery-1.10.2.min.js"></script><script type="text/javascript" src="http://i5ting.github.io/git-quick-start/preview/js/jquery.ztree.all-3.5.min.js"></script><script type="text/javascript" src="http://i5ting.github.io/git-quick-start/preview/js/jquery.ztree_toc.js"></script>
-<SCRIPT type="text/javascript" > <!-- $(document).ready(function(){ $('#tree').ztree_toc({ is_auto_number:true, documment_selector:'.markdown-body', ztreeStyle: { width:'260px', overflow: 'auto', position: 'fixed', 'z-index': 2147483647, border: '0px none', left: '0px', top: '0px' } }); }); //--> </SCRIPT> 
