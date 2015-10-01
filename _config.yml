@@ -13,9 +13,10 @@ description:
 github_username:  pzhp
 permalink: /:year/:month/:day/:title/
 
-# Build settings
-markdown: kramdown
-
+# Build settings: kramdown, redcarpet
+markdown: redcarpet
+redcarpet:
+	 extensions: [ "fenced_code_blocks", "hard_wrap","autolink", "tables", "strikethrough", "superscript", "with_toc_data", "highlight", "prettify","no_intra_emphasis"]
 paginate: 10
 paginate_path: "page:num"
 
