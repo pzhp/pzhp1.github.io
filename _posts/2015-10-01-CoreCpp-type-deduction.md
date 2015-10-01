@@ -10,6 +10,7 @@ excerpt: c++ type decduction。
 {:toc}
 ---
 
+
 #Core C++ series: type deduction（类型推导/演绎）
 
 ##1. 类型推导介绍
@@ -81,7 +82,7 @@ ExprType6 // failed to compile for non-const reference bind to a rvalue
 // 如果是形如`void f(const T& param)`, 只是在推导T是去掉ExprType的top-level const修饰，因为ParamType中已经含有const修饰了，比如以上的`T3 = const char*`
 ```
 
-这种情况下，会保留ExprType的const/volatile属性，也不会发生数组/函数到指针的转型。但指针的情况又稍微特殊点，比如原类型ExprType是`const char* const p`，调整后会变成`const char*`，top-level的const修饰还是会被舍弃，请看下面的例子：
+这种情况下，会保留ExprType的const/volatile属性，也不会发生数组/函数到指针的转型。但指针的情况又稍微特殊点，比如原类型ExprType是`const char* const`，调整后会变成`const char*`，top-level的const修饰还是会被舍弃，请看下面的例子：
 
 ```C++
 /*所指向对象的const属性保留，但top-level的const属性会去除*/
@@ -102,6 +103,7 @@ ExprType6 // failed to deduction
 
 ####2.1.2 ParamType是universal reference
 关于ExprType的调整方式与T&的调整一样，只不过需要额外考虑expr的左/右值属性：`如果expr是左值，则ParamType推导结果是左值引用，如果expr是右值，则ParamType推导结果是右值引用`。为了达到这个效果，需要考虑在推导T的时候额外加上引用属性，然后利用reference collapse完成推导。更多的细节可以参考[universal reference][1]/forward reference。
+
 ```C++
 template <typename T>
 void f(T&& param); // const T&&的形式不是universal reference
@@ -126,6 +128,7 @@ T6 => std::basic_string<char> // expr 是右值，无需额外加引用
 
 ####2.1.3  ParamType是传值的形式
 这种形式的推导不仅会去除原类型ExprType的const/volatile修饰，在类型推导之前还会发生数组/函数到指针的转型。
+
 ```C++
 template<typename T>
 void f(T param);
@@ -158,7 +161,7 @@ auto x {1}; // ok，x的类型是int
 
 ###2.2 decltype的类型推导
 
-decltype顾名思义就是推导变量声明时的类型，比如`int& x = y; `decltype(x)就该为int&，保留了原类型的属性，来看看C++11标准的规定：
+decltype顾名思义就是推导变量声明时的类型，比如`int& x = y;` `decltype(x)`就该为`int&`，保留了原类型的属性，来看看C++11标准的规定：
 > 1) If the argument is an unparenthesized id-expression or an
 > unparenthesized class member access, then decltype yields the type of
 > the entity named by this expression. If there is no such entity, or if
@@ -169,7 +172,8 @@ decltype顾名思义就是推导变量声明时的类型，比如`int& x = y; `d
 >     - b) if the value category of expression is lvalue, then decltype yields T&;
 >     - c) if the value category of expression is prvalue, then decltype yields T.
 
-标准可以解释为优先看表达式是不是某个id（比如x, classa.member_var）, 如果是，则直接取声明时的类型，如果不是，则需要根据[lvalue, xvalue, pvalue][2]属性来调整类型。
+标准可以解释为优先看表达式是不是某个id（比如`x, classa.member_var`）, 如果是，则直接取声明时的类型，如果不是，则需要根据[lvalue, xvalue, pvalue][2]属性来调整类型。
+
 ```C++
 //** use stantard item 1
 int y = 1;
@@ -189,6 +193,7 @@ decltype(0) xType; // 0是pvalue, xType的类型是int
 ```
 
 ###2.3 函数返回值类型推导
+
 ```C++
 auto lookupValue() // C++11需要加trialing return type
 {
@@ -197,7 +202,7 @@ auto lookupValue() // C++11需要加trialing return type
     return values[idx]; // lvalue reference
 }
 ```
-auto的类型推导与template by value形式的推导方式一致，原类型的reference/const属性要丢弃，此处函数返回值类型是int。当然，返回形式可以声明为auto&, auto&&，推导方式分别与template的推导方式一致。T&&和auto &&都能根据原对象的左/右值属性来调整推导结果是左/右值引用，但是原对象的reference属性却是丢失的，表现如下：
+auto的类型推导与template by value形式的推导方式一致，原类型的reference/const属性要丢弃，此处函数返回值类型是int。当然，返回形式可以声明为`auto&, auto&&`，推导方式分别与template的推导方式一致。`T&&和auto &&`都能根据原对象的左/右值属性来调整推导结果是左/右值引用，但是原对象的T1 (T2::*)(T3*)引用属性却是丢失的，表现如下：
 
 ```C++
 // auto用作函数返回值类型的缺点
@@ -208,8 +213,9 @@ auto fun_wrapper(Fun fun, Args&&... args)
 }
 ```
 
-如果fun(...)返回的T&，根据auto的推导规则，fun_wrapper(...)的返回值类型是T，不能达到完美转发的目的。如果声明成auto& fun_wrapper(...)，若fun(...)的返回值类型是T，fun_wrapper(...)的返回类型却是T&，依旧不能完美转发。
-为了克服这个缺点，C++14 引入decltype(auto)，主要应用decltype的规则做推导，保证fun_wrapper(...)的返回类型与fun(...)一致。注意，C++标准只定义了decltype(auto)的规则，decltype(auto&)与decltype(auto&&)均是非法。
+如果`fun(...)`返回的`T&`，根据`auto`的推导规则，`fun_wrapper(...)`的返回值类型是T，不能达到完美转发的目的。如果声明成`auto& fun_wrapper(...)`，若`fun(...)`的返回值类型是T，`fun_wrapper(...)`的返回类型却是`T&`，依旧不能完美转发。
+为了克服这个缺点，C++14 引入`decltype(auto)`，主要应用`decltype`的规则做推导，保证`fun_wrapper(...)`的返回类型与`fun(...)`一致。注意，C++标准只定义了`decltype(auto)`的规则，`decltype(auto&)`与`decltype(auto&&)`均是非法。
+
 ```C++
 // decltype(auto)
 template<class Fun, class... Args>
@@ -233,6 +239,7 @@ lookupValue() = 12; // 编译可以过，但会遇到运行期错误，对函数
 
 ###2.4 lambda 表达式中的类型推导
 lambda中变量捕获的类型推导更接近函数传参的方式，而不是template/auto的类型推导方式。需要注意的一点是变量捕获时会保留原类型的const/volatile修饰。
+
 ``` C++
 // C++11，用传参数的方式来考虑
 const int cx = 0;
@@ -250,6 +257,7 @@ auto lambda = [](auto x, auto y){return x+y; };//generic lambda，参数使用au
 ###3.1 多对推导
 -  每对(ParamType, ExprType)都分别进行推导，如果推导出的类型有冲突，则该推导失败
 -  只有部分模板参数进行推导，其他模板参数使用已经指定/推导的类型，如果没有可使用的类型，则模板推导是失败的。
+
 ```C++
 /*Ex1 结论矛盾*/
 template <typename T> void f(T t1, T t2);
@@ -279,6 +287,7 @@ f_wrap(&X<33>::f); // ok，X<N>::*p 推导出N=33，然后带入到X<N>::I中
 ### 3.2 推导的条件
 
 本小节给出部分无法推导的上下文，更多的规则，参考[Template argument deduction: Non-deduced contexts][3]
+
 ```C++
 /*Ex1:*/
 // 模板参数处于限定符::左边，无法参与类型推导，是个无法推导的上下文
@@ -329,7 +338,6 @@ f<int>(); // ok
 这里也给出能够形成推导的上下文，但又比较特殊的例子：
 
 ```C++
-
 /*Ex1 转型运算符模板*/
 // user-defined conversion template based on return type
 template<typename T>
