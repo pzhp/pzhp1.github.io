@@ -4,6 +4,7 @@ title:  "Core C++: type deduction"
 date:   2015-10-01 23:06:05
 categories: C++
 excerpt: c++ type decduction。
+
 ---
 * content
 {:toc}
@@ -15,17 +16,17 @@ excerpt: c++ type decduction。
 ```C++
 /*Ex1*/
 template <typename E, int N>
-void f(E(&)[N]);
+void f(E(&)[N]); //形参类型ParamType = E(&)[N]
 bool b[42];
-f(b); // P=E(&)[N], A=bool [42] 比较P和A, 推导出E=bool, N=42，P中的引用修饰表明了推导的方法（数组不会退化转型成指针）
+f(b); // 实参类型ExprType = bool [42] 比较ParamType和ExprType, 推导出E=bool, N=42，ParamType中的引用修饰表明了推导的方法（后文详述）
 
 /*Ex2*/
 template<typename T1, typename T2, typename T3>
-void g(T1 (T2::*)(T3*));// 指向类T2成员函数的指针，其参数类型T3, 返回值类型T1
+void g(T1 (T2::*)(T3*));// ParamType = T1 (T2::*)(T3*) 指向类T2成员函数的指针，其参数类型T3, 返回值类型T1
 class S {
     public: void f(double*);
 }
-g(&S::f); // P=T1 (T2::*)(T3*)，A=(void)(S::*)(double*), 自顶向下比对各个构造，推导结果:T1=void, T2=S, T3=doule
+g(&S::f); // ExprType =(void)(S::*)(double*), 自顶向下比对各个构造，推导结果:T1=void, T2=S, T3=doule
 ```
 
 上面两个例子是C++11以前就支持的类型推导，但C++11及以后的标准新增了许多需要类型推导的形式。
@@ -60,7 +61,7 @@ f(string()); // expr6: string()是右值
 - ParamType is a universal reference 
 - ParamType is neither reference nor pointer
  
-无论哪种形式的ParamType，ExprType的引用属性都要除去, 例如ExprType1的int& 要调整成int 。
+无论哪种形式的ParamType，ExprType的引用属性都要除去, 例如ExprType1的`int&`要调整成`int`。
 
 ####2.1.1 ParamType是引用或指针（非universal reference）
 ```C++
@@ -77,10 +78,10 @@ ExprType5 => const char [10]
 ExprType6 // failed to compile for non-const reference bind to a rvalue
  
 // 模板参数的类型T = ExprType
-// 如果是形如void f(const T& param), 只是在推导T是去掉ExprType的top-level const修饰，因为ParamType中已经含有const修饰了，比如以上的T3 = const char*
+// 如果是形如`void f(const T& param)`, 只是在推导T是去掉ExprType的top-level const修饰，因为ParamType中已经含有const修饰了，比如以上的`T3 = const char*`
 ```
 
-这种情况下，会保留ExprType的const/volatile属性，也不会发生数组/函数到指针的转型。但指针的情况又稍微特殊点，比如原类型ExprType是const char* const p，调整后会变成const char*，top-level的const修饰还是会被舍弃，请看下面的例子：
+这种情况下，会保留ExprType的const/volatile属性，也不会发生数组/函数到指针的转型。但指针的情况又稍微特殊点，比如原类型ExprType是`const char* const p`，调整后会变成`const char*`，top-level的const修饰还是会被舍弃，请看下面的例子：
 
 ```C++
 /*所指向对象的const属性保留，但top-level的const属性会去除*/
