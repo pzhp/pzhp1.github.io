@@ -1,4 +1,4 @@
-# Fork
+# Attention
 If you want to reuse this theme, please read and follow these bullets:
 * Jekyll theme by [Gaohaoyang](https://github.com/Gaohaoyang/gaohaoyang.github.io)
 You can use on your own blog. Before you use it, please click a star on [this respository](https://github.com/Gaohaoyang/gaohaoyang.github.io/). You will encourage me to do more great things!
