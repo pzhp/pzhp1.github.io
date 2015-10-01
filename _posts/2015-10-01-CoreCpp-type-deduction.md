@@ -58,9 +58,9 @@ f(string()); // expr6: string()是右值
 ```
 
 通常ParamType有如下三种形式：
-- ParamType is a reference or pointer, but not a universal refrence
-- ParamType is a universal reference 
-- ParamType is neither reference nor pointer
+* ParamType is a reference or pointer, but not a universal refrence
+* ParamType is a universal reference 
+* ParamType is neither reference nor pointer
  
 无论哪种形式的ParamType，ExprType的引用属性都要除去, 例如ExprType1的`int&`要调整成`int`。
 
@@ -240,7 +240,7 @@ lookupValue() = 12; // 编译可以过，但会遇到运行期错误，对函数
 ###2.4 lambda 表达式中的类型推导
 lambda中变量捕获的类型推导更接近函数传参的方式，而不是template/auto的类型推导方式。需要注意的一点是变量捕获时会保留原类型的const/volatile修饰。
 
-``` C++
+```C++
 // C++11，用传参数的方式来考虑
 const int cx = 0;
 auto lambda_byval = [cx]() {}; // by value, 保留原类型的cont/volatile修饰
@@ -253,7 +253,7 @@ auto lambda = [](auto x, auto y){return x+y; };//generic lambda，参数使用au
 ```
 
 ##3. 模板参数类型推导上下文
-之前的内容都是在讨论单一(ParamType, ExprType)的推导，但实际中经常会遇到多对(ParamTypeN,  ExprTypeN)的推导，此外还会遇到类型无法参与推导的情况，这些都涉及到`推导上下文`。
+之前的内容都是在讨论单一(ParamType, ExprType)的推导，但实际中经常会遇到多对(ParamTypeN,  ExprTypeN)的推导，此外还会遇到类型无法参与推导的情况，这些都涉及到**推导上下文**。
 ###3.1 多对推导
 -  每对(ParamType, ExprType)都分别进行推导，如果推导出的类型有冲突，则该推导失败
 -  只有部分模板参数进行推导，其他模板参数使用已经指定/推导的类型，如果没有可使用的类型，则模板推导是失败的。
