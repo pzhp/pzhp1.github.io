@@ -10,9 +10,6 @@ excerpt: c++ type decduction。
 {:toc}
 ---
 
-
-#Core C++ series: type deduction（类型推导/演绎）
-
 ##1. 类型推导介绍
 ```C++
 /*Ex1*/
