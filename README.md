@@ -14,9 +14,8 @@ var _hmt = _hmt || [];
   var s = document.getElementsByTagName("script")[0]; 
   s.parentNode.insertBefore(hm, s);
 })();
-
-You can also replace it with your own site statistics account at http://tongji.baidu.com/.
 ```
+You can also replace it with your own site statistics account at http://tongji.baidu.com/.
 
 * Change the duoshuo comment code 
 In _layouts/default.html

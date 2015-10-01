@@ -12,7 +12,7 @@ icon: glyphicon-heart
 ### 联系我
 
 * email：[pengzhengpu@foxmail.com](mailto:{{ site.email }})
-* github: [https://github.com/pzhp]
+* github: [pzhp](https://github.com/pzhp)
 
 
 
