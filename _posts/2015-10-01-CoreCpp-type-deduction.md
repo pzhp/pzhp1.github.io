@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "前端的一些资料和工具"
+title:  "Core C++: type deduction"
 date:   2015-05-18 14:06:05
-categories: Front-end
-excerpt: 记录一些好用的前端工具和框架。
+categories: C++
+excerpt: c++ type decduction。
 ---
 
 * content
