@@ -11,7 +11,6 @@ excerpt: 记录一些好用的前端工具和框架。
 
 #Core C++ series: type deduction（类型推导/演绎）
 
-[TOC]
 
 
 ##1. 类型推导介绍
