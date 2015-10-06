@@ -18,7 +18,7 @@ excerpt: C++11 new feature on function
 **decl-specifier-seq**:  return type
 **declarator**:`noptr-declarator ( parameter-list ) cv(optional) ref(optional) except(optional) attr(optional) -> trailing`
 **function-body**: `ctor-initializer(optional) compound-statement` or `function-try-block` or `= delete ;` or `= default ;`
-Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`.
+Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`, but those meanings are different
 
 ###1.const & volatile & reference
 >A non-static member function can be declared with a const, volatile, or const volatile qualifier;
@@ -87,11 +87,11 @@ int main()
 >1. The noexcept-specification is not a part of the function type;
 >2. It cannot appear in a typedef or type alias declaration(using ...);
 >3. `noexcept` is an improved version of throw(), which is deprecated in C++11. Unlike throw(), noexcept will not call std::unexpected and may or may not unwind the stack, which potentially allows the compiler to implement noexcept without the runtime overhead of throw().    
+
 [More details][1].
 
 ###3.attribute
 `attr` introduces implementation-defined attributes for types, objects, code, etc.  The GNU and IBM language's extensions syntax are ` __attribute__((...))`, Microsoft 's extension is  `__declspec()`.
->In declarations, attributes may appear both before and directly after the name of the entity that is declared, in which case they are combined.
 
 ```C++
 // C++ standard
@@ -102,7 +102,7 @@ throw "error"; // OK
 // behavior is undefined if called with an argument <= 0
 if (i > 0) throw "positive";
 }
-// void q(int) [[noreturn]]; // error/warning: 'noreturn' attribute cannot be applied to types (warning in gcc, error in Clang). It is a little different from cppreference's description about function declarator.
+// void q(int) [[noreturn]]; // Clang error/GCC warning: 'noreturn' attribute cannot be applied to types, which means this attribute should not be placed here
 
 // GNU style 
 extern void exit(int) __attribute__((noreturn));
