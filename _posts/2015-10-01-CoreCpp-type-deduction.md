@@ -304,6 +304,15 @@ bad(x, 1.2); // error, ExrpType1和ExrpType2都参加类型推导，而ExrpType1
              // ExrpType2推导的T=double，两者冲突，类型推导失败。
 good(x, 1.2); // ok，ExrpType2处于non-deduced contexts，只ExrpType1有类型推导。
 
+// 利用这种规则来强制要求函数模板显示指定模板参数
+template <typename T>
+T&& forward(typename identity::type&& param)
+{
+	return static_cast<identity::type&&>(param); // STL的forward实现也用到这种思想
+}
+forward<T>(param); // ok
+forward(param); // error
+
 /*Ex2:*/
 // 子表达式引用了模板参数
 template<std::size_t N> void f(std::array<int, 2*N> a);
