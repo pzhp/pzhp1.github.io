@@ -1,3 +1,17 @@
+---
+layout: post
+title:  "Introdcution on C++11"
+date:   2015-10-06 12:13:05
+categories: C++
+excerpt: c++11
+
+---
+
+* content
+{:toc}
+
+---
+
 ###function declaration & defination
 `attr(optional) decl-specifier-seq(optional) declarator virt-specifier-seq(optional) function-body`
 **decl-specifier-seq**:  return type
