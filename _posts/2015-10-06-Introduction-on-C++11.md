@@ -17,14 +17,14 @@ excerpt: C++11 new feature on function
 **attr**: `[[attr]] [[attr1, attr2, attr3(args)]] [[namespace::attr(args)]] alignas_specifier`
 **decl-specifier-seq**:  return type
 **declarator**:`noptr-declarator ( parameter-list ) cv(optional) ref(optional) except(optional) attr(optional) -> trailing`
-**function-body**: `ctor-initializer(optional) compound-statement	` or `function-try-block` or `= delete ;` or `= default ;`
-ALl these can be found from www.cppreference.com or C++ standard specification.
+**function-body**: `ctor-initializer(optional) compound-statement` or `function-try-block` or `= delete ;` or `= default ;`
+Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`.
 
 ###1.const & volatile & reference
 >A non-static member function can be declared with a const, volatile, or const volatile qualifier;
 >A non-static member function can be declared with either an lvalue ref-qualifier (the character & after the function name) or rvalue ref-qualifier (the character && after the function name);   
  
- Overload resolution will choose right version based on the property of `this` e.g.: `const, non-const, glvalue, rvalue`, sometimes introduce `non-const` to `const` conversion.
+Overload resolution will choose right version based on the property of `this` e.g.: `const, non-const, glvalue, rvalue`, sometimes introduce `non-const` to `const` conversion.
  
 ``` C++
 // const/volatile qualified
@@ -86,13 +86,13 @@ int main()
 >Note:
 >1. The noexcept-specification is not a part of the function type;
 >2. It cannot appear in a typedef or type alias declaration(using ...);
->3. `noexcept` is an improved version of throw(), which is deprecated in C++11. Unlike throw(), noexcept will not call std::unexpected and may or may not unwind the stack, which potentially allows the compiler to implement noexcept without the runtime overhead of throw(). 
+>3. `noexcept` is an improved version of throw(), which is deprecated in C++11. Unlike throw(), noexcept will not call std::unexpected and may or may not unwind the stack, which potentially allows the compiler to implement noexcept without the runtime overhead of throw().    
+[More details][1].
 
-[More detail ][1].
-
-###attribute
+###3.attribute
 `attr` introduces implementation-defined attributes for types, objects, code, etc.  The GNU and IBM language's extensions syntax are ` __attribute__((...))`, Microsoft 's extension is  `__declspec()`.
 >In declarations, attributes may appear both before and directly after the name of the entity that is declared, in which case they are combined.
+
 ```C++
 // C++ standard
 [[ noreturn ]] void f() {
@@ -102,7 +102,7 @@ throw "error"; // OK
 // behavior is undefined if called with an argument <= 0
 if (i > 0) throw "positive";
 }
-// void q(int) [[noreturn]]; // error/warning: 'noreturn' attribute cannot be applied to types (warning in gcc, error in Clang). It should be something wrong in cppreference's description about function declaration.
+// void q(int) [[noreturn]]; // error/warning: 'noreturn' attribute cannot be applied to types (warning in gcc, error in Clang). It is a little different from cppreference's description about function declarator.
 
 // GNU style 
 extern void exit(int) __attribute__((noreturn));
@@ -110,10 +110,11 @@ extern void exit(int) __attribute__((noreturn));
 // Clang: this applies the GNU unused attribute to a and f, and also applies the GNU noreturn attribute to f.
 [[gnu::unused]] int a, f [[gnu::noreturn]] (); 
 ```
-###trailing return type
+###4.trailing return type
 Trailing return type is useful if the return type depends on argument names, such as `template <class T, class U> auto add(T t, U u) -> decltype(t + u); `or is complicated, such as in `auto fpif(int)->int(*)(int)`. From C++14, the trailing return type can be ignored.
 ###function specifier: explicit & override & final
-`virtual` and `inline` have been used widely.  C++11 introduce `explicit`.The `explicit` specifier shall be used only in the declaration of a constructor or conversion function within its class definition. Specifies that this user-defined conversion function is only considered for direct initialization (including explicit conversions)[More detail][2].
+`virtual` and `inline` have been used widely.  C++11 introduce `explicit`.The `explicit` specifier shall be used only in the declaration of a constructor or conversion function within its class definition. Specifies that this user-defined conversion function is only considered for direct initialization (including explicit conversions)[More details][2].
+
 ```C++
 explicit class_name ( params )	 (1)	
 explicit operator type ( ) (since C++11) (2)	
@@ -127,6 +128,7 @@ class A
 };
 ```
 `override` means this function must be a virtual function derived from base class, which has a compile-time check. `final` means this function cannot be overridden in its derived class. Moreover `final` can be used on class .
+
 ```C++
 // override
 struct A{
@@ -157,8 +159,9 @@ struct C : B // Error: B is final
 { };
 ```
 
-###function body: '=delete' & '= default'
+###5.function body: '=delete' & '= default'
 `=delete` and `=default` are introduced since C++11, present function body. `=delete` explicitly delete function definition. The deleted definition of a function must be the first declaration in a translation unit: a previously-declared function cannot be redeclared as deleted.`=default` explicitly use defaulted function definition, only allowed for [special member functions][3].
+
 ```C++
 struct sometype
 {
@@ -168,7 +171,7 @@ struct sometype
 sometype* p = new sometype; // error, attempts to call deleted sometype::operator new
 ```
 
-
 [1]: http://en.cppreference.com/w/cpp/language/noexcept_spec
 [2]: http://en.cppreference.com/w/cpp/language/explicit
 [3]: http://en.cppreference.com/w/cpp/language/member_functions#Special_member_functions
+[4]: http://en.cppreference.com/w/cpp/language/attributes
