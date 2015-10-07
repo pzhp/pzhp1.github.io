@@ -12,13 +12,13 @@ excerpt: C++11 new feature on function
 
 ---
 
-##function declaration
+Function-definition:
 `attr(optional) decl-specifier-seq(optional) declarator virt-specifier-seq(optional) function-body`
 **attr**: `[[attr]] [[attr1, attr2, attr3(args)]] [[namespace::attr(args)]] alignas_specifier`
 **decl-specifier-seq**:  return type
 **declarator**:`noptr-declarator ( parameter-list ) cv(optional) ref(optional) except(optional) attr(optional) -> trailing`
 **function-body**: `ctor-initializer(optional) compound-statement` or `function-try-block` or `= delete ;` or `= default ;`
-Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`, but those meanings are different
+Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`, whose meaning are different.
 
 ###1.const & volatile & reference
 >A non-static member function can be declared with a const, volatile, or const volatile qualifier;
@@ -112,7 +112,19 @@ extern void exit(int) __attribute__((noreturn));
 ```
 ###4.trailing return type
 Trailing return type is useful if the return type depends on argument names, such as `template <class T, class U> auto add(T t, U u) -> decltype(t + u); `or is complicated, such as in `auto fpif(int)->int(*)(int)`. From C++14, the trailing return type can be ignored.
-###function specifier: explicit & override & final
+
+###5.function body: '=delete' & '= default'
+`=delete` and `=default` are introduced since C++11, present function body. `=delete` explicitly delete function definition. The deleted definition of a function must be the first declaration in a translation unit: a previously-declared function cannot be redeclared as deleted.`=default` explicitly use defaulted function definition, only allowed for [special member functions][3].
+
+```C++
+struct sometype
+{
+    void* operator new(std::size_t) = delete;
+    void* operator new[](std::size_t) = delete;
+};
+sometype* p = new sometype; // error, attempts to call deleted sometype::operator new
+```
+###6 function specifier: 'explicit' & 'override' & 'final'
 `virtual` and `inline` have been used widely.  C++11 introduce `explicit`.The `explicit` specifier shall be used only in the declaration of a constructor or conversion function within its class definition. Specifies that this user-defined conversion function is only considered for direct initialization (including explicit conversions)[More details][2].
 
 ```C++
@@ -159,17 +171,6 @@ struct C : B // Error: B is final
 { };
 ```
 
-###5.function body: '=delete' & '= default'
-`=delete` and `=default` are introduced since C++11, present function body. `=delete` explicitly delete function definition. The deleted definition of a function must be the first declaration in a translation unit: a previously-declared function cannot be redeclared as deleted.`=default` explicitly use defaulted function definition, only allowed for [special member functions][3].
-
-```C++
-struct sometype
-{
-    void* operator new(std::size_t) = delete;
-    void* operator new[](std::size_t) = delete;
-};
-sometype* p = new sometype; // error, attempts to call deleted sometype::operator new
-```
 
 [1]: http://en.cppreference.com/w/cpp/language/noexcept_spec
 [2]: http://en.cppreference.com/w/cpp/language/explicit
