@@ -240,10 +240,10 @@ lookupValue() = 12; // 编译可以过，但会遇到运行期错误，对函数
 lambda中变量捕获的类型推导更接近函数传参的方式，而不是template/auto的类型推导方式。需要注意的一点是变量捕获时会保留原类型的const/volatile修饰。
 
 ```C++
-// C++11，用传参数的方式来考虑
+// C++11
 const int cx = 0;
 auto lambda_byval = [cx]() {}; // by value, 保留原类型的cont/volatile修饰
-auto lambda_byref = [cx&]() {}; // by reference
+auto lambda_byref = [cx&]() {}; // by reference, there is no “capture by const reference”
 
 // C++14
 auto lambda_init = [cy = cx]() {}; // by value 初始化捕获，cy的类型是int，没有保留原来类型的const修饰

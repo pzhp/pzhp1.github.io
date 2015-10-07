@@ -2,7 +2,7 @@
 layout: post
 title:  "C++11: new feature on function"
 date:   2015-10-06 12:13:05
-categories: C++, C++11
+categories: C++ C++11
 excerpt: C++11 new feature on function
 
 ---
@@ -15,7 +15,7 @@ excerpt: C++11 new feature on function
 Function-definition:
 `attr(optional) decl-specifier-seq(optional) declarator virt-specifier-seq(optional) function-body`
 **attr**: `[[attr]] [[attr1, attr2, attr3(args)]] [[namespace::attr(args)]] alignas_specifier`
-**decl-specifier-seq**:  return type
+**decl-specifier-seq**:  return type, function-specifier(`inline, virtual, explicit`)
 **declarator**:`noptr-declarator ( parameter-list ) cv(optional) ref(optional) except(optional) attr(optional) -> trailing`
 **function-body**: `ctor-initializer(optional) compound-statement` or `function-try-block` or `= delete ;` or `= default ;`
 Note: `attr` can be placed at begin of function declaration/defination, or just after funcation id which in `noptr-declarator`, or after `cvr specifier`, whose meaning are different.
@@ -124,19 +124,20 @@ struct sometype
 };
 sometype* p = new sometype; // error, attempts to call deleted sometype::operator new
 ```
-###6 function specifier: 'explicit' & 'override' & 'final'
+###6 'explicit' & 'override' & 'final'
+Function-specifier: `virtual, inline, explicit`.
 `virtual` and `inline` have been used widely.  C++11 introduce `explicit`.The `explicit` specifier shall be used only in the declaration of a constructor or conversion function within its class definition. Specifies that this user-defined conversion function is only considered for direct initialization (including explicit conversions)[More details][2].
 
 ```C++
 explicit class_name ( params )	 (1)	
 explicit operator type ( ) (since C++11) (2)	
 ```
-`override` and `final` are virtual function specifier. The syntax is **`declarator virt-specifier-seq(optional) pure-specifier(optional)`**, e.g. 
+`override` and `final` are virtual specifier which are not C++ reserved keywords, but have special meaning in certain contexts. The syntax is **`declarator virt-specifier-seq(optional) pure-specifier(optional)`**.
 
 ```C++
 class A
 {
-  virtual auto fun[[noreturn]](int x) const volatile && noexcept -> decltype(x) final{}
+  virtual auto fun[[noreturn]](int x) const volatile && noexcept -> decltype(x) final {}
 };
 ```
 `override` means this function must be a virtual function derived from base class, which has a compile-time check. `final` means this function cannot be overridden in its derived class. Moreover `final` can be used on class .
