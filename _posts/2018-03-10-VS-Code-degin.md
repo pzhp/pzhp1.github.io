@@ -4,7 +4,7 @@ Render process <=> Debug Adaptor(app) <=> real debugger
 Extenstion Host <=> Language Server(other process)
 ref https://github.com/Microsoft/vscode-docs/blob/master/docs/extensions/overview.md
 
-![Extension](extensibility-architecture.png)
+![Extension](https://github.com/Microsoft/vscode-docs/blob/master/docs/extensions/images/example-debuggers/extensibility-architecture.png)
 
 In order to avoid problems with local firewalls, VS Code communicates with the adapter through stdin/stdout instead of using a more sophisticated mechanism (e.g. sockets).
 
