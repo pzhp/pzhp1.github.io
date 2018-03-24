@@ -1,8 +1,16 @@
 # Core
 [Overview](https://github.com/Microsoft/vscode-docs/blob/master/docs/extensions/overview.md)
 
-- Render process <=> Debug Adaptor(app) <=> real debugger
-- Extenstion Host <=> Language Server(other process)
+- Seperate Process and communicate by protocal 
+	1) Render process <=> Debug Adaptor(app) <=> real debugger
+	2) Extenstion Host <=> Language Server(other process)
+- Based on extensions/plugin
+- Write Extension/LanguageServer/DebugAdaptor and debug them
+	1) run DebugAdaptor process, attach to it in vscode by "debugSerer:4711" in launch.json
+	2) merge DebugAdaptor code with extension togerther
+- Contribution concept
+- Launch configuration: validate, edit tips, inital value(package.json, DebugConfigurationProvider )
+
 
 All VS Code extensions share a common model of contribution (registration), activation (loading) and access to the VS Code extensibility API. There are however two special flavors of VS Code extensions, language servers and debuggers, which have their own additional protocols and are covered in their own sections of the documentation.
 
@@ -17,8 +25,7 @@ In order to avoid problems with local firewalls, VS Code communicates with the a
 
 [Doc](https://github.com/Microsoft/vscode-docs/tree/master/docs)
 
-# Others
-## file
+# structure
 .vscode/{launch,settings,tasks}.json
 extension: package.json, extension.ts // the source of the extension entry point
 
@@ -93,16 +100,3 @@ extension: package.json, extension.ts // the source of the extension entry point
     }
 }]
 ```
-## Extension API
-VS Code does not expose DOM/Web to extension
-Define Extension Manifest
-Protocol based extensions
-Pattern: 
-promise，
-cancellation token，
-Disposables: For instance, the setStatusBarMessage(value: string) function returns a Disposable which upon calling dispose removes the message again.
-Events: event as function, regsiter and get Disposable, onWill/DidVerbNoun
-
-Contribution Points：
-Extension Manifest File 
-Activation Events 
