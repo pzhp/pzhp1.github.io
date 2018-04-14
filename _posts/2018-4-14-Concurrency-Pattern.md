@@ -56,7 +56,7 @@ template <class I, class F>
 Future<I> reduce(I&& initial, F&& func);
 
 ```
-![asf](images/promise_future.png)
+![asf](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
 # async/await
 
 
