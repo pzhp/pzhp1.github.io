@@ -1,63 +1,110 @@
+---
+layout: post
+title:  "Concurrency pattern"
+date:   2018-4-14 16:24:00
+categories: C++,javascript,go
+
+---
+
+![Outline](https://github.com/pzhp/pzhp.github.io/blob/master/images/concurrency_pattern.png)
+
 # callback
 
 
+Cons:
+- lifecyle manage
+- executor/thread manage
+- callback hell
+
 # promise/future
+[folly/fututre](https://github.com/facebook/folly/blob/master/folly/futures/Future.h) 
+[eaxample](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
 
-folly/future:
-``` C++ 
-[future api](https://github.com/facebook/folly/blob/master/folly/futures/Future.h)
-// group：value, result(Try<T>), isReady, hasValue/Exception, poll(Optional<Try<T>>), raise, cancel
-// group: via, then, onError...
-// group: timeout
-// group: combine: filter/reduce
-// group: get
-inline Future<T> via(
-    Executor* executor,
-    int8_t priority = Executor::MID_PRI) &;
+![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
 
-template <typename F, typename R = futures::detail::callableResult<T, F>>
-typename R::Return then(F&& func);
+Cons:
+- chained then with arguments
 
-template <class F>
-typename std::enable_if<
-    !futures::detail::callableWith<F, exception_wrapper>::value &&
-        !futures::detail::callableWith<F, exception_wrapper&>::value &&
-        !futures::detail::Extract<F>::ReturnsFuture::value,
-    Future<T>>::type
-onError(F&& func);
+# async/await
+## Case study
+[javascript promise and async/await](https://segmentfault.com/a/1190000007535316)
+```javascript
+function takeLongTime(n) {
+    return new Promise(resolve => {
+        // setTimeout mock time consuming task.
+        // after n, will call the funtion
+        setTimeout(() => resolve(n + 200), n);
+    });
+}
 
-// func is always executed 
-template <class F>
-Future<T> ensure(F&& func);
+function step1(n) {
+    console.log(`step1 with ${n}`);
+    return takeLongTime(n);
+}
 
-template <class F>
-Future<T> onTimeout(Duration, F&& func, Timekeeper* = nullptr);
+function step2(n) {
+    console.log(`step2 with ${n}`);
+    return takeLongTime(n);
+}
 
-/// Throw the given exception if this Future does not complete within the
-/// given duration from now. The optional Timeekeeper is as with
-/// futures::sleep().
-template <class E>
-Future<T> within(Duration, E exception, Timekeeper* = nullptr);
+function step3(n) {
+    console.log(`step3 with ${n}`);
+    return takeLongTime(n);
+}
 
-//
-Future<T> delayed(Duration, Timekeeper* = nullptr);
+// serialize execute: step1 => step2 => step3 
+function doIt() {
+    console.time("doIt");
+    const time1 = 600;
+    step1(time1)
+        .then(time2 => step2(time2))
+        .then(time3 => step3(time3))
+        .then(result => {
+            console.log(`result is ${result}`);
+            console.timeEnd("doIt");
+        });
+}
 
-T get();
-T get(Duration dur);
-Future<T>& wait(Duration) &;
+// doIt();
 
-/*Group*/
-template <class F>
-Future<T> filter(F&& predicate);
+console.log("................")
 
-/// Like reduce, but works on a Future<std::vector<T / Try<T>>>, for example
-/// the result of collect or collectAll
-template <class I, class F>
-Future<I> reduce(I&& initial, F&& func);
+async function doItByAwait() {
+    console.time("doIt");
+    const time1 = 300;
+	console.log("before step1")
+    // block util step1() done
+    const time2 = await step1(time1);
+	console.log("before step2")
+    const time3 = await step2(time2);
+	console.log("before step3")
+    const result = await step3(time3);
+	console.log("before end")
+    console.log(`result is ${result}`);
+    console.timeEnd("doIt");
+}
+
+doItByAwait();
+```
+```c#
 
 ```
-![asf](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
-# async/await
 
+## Understand from [continuation](https://en.wikipedia.org/wiki/Continuation)
+```c++
+step1(t1)
+step2(t2)
+step3(t3)
+
+// transform
+
+step1(t1, context1) // context1 is a context including next cod
+
+```
+## Pros
+- use sync logic to write async code
 
 # channel
+
+
+
