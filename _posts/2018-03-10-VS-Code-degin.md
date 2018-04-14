@@ -8,6 +8,7 @@
 - Write Extension/LanguageServer/DebugAdaptor and debug them
 	1) run DebugAdaptor process, attach to it in vscode by "debugSerer:4711" in launch.json
 	2) merge DebugAdaptor code with extension togerther
+	3) LS: client is written by extension which launch server process with listen port. When need debug server, attach to the listen port.
 - Contribution concept
 - Launch configuration: validate, edit tips, inital value(package.json, DebugConfigurationProvider )
 
@@ -75,6 +76,17 @@ extension: package.json, extension.ts // the source of the extension entry point
 			"name": "Mock Sample",
 			"program": "${workspaceFolder}/${command:AskForProgramName}",
 			"stopOnEntry": true
+		},
+		{
+			"name": "Attach to Server in LSP",
+			"type": "node",
+			"request": "attach",
+			"port": 6009,
+			"sourceMaps": true,
+			"outFiles": [
+				"${workspaceRoot}/client/server/**/*.js"
+			],
+			"preLaunchTask": "watch:server"
 		}
 	],
 	"compounds": [
