@@ -1,13 +1,11 @@
+# callback
 
-#callback
 
-
-#promise/future
-
+# promise/future
 
 folly/future:
-```C++ api in folly/future
-https://github.com/facebook/folly/blob/master/folly/futures/Future.h
+``` C++ 
+[future api](https://github.com/facebook/folly/blob/master/folly/futures/Future.h)
 // group：value, result(Try<T>), isReady, hasValue/Exception, poll(Optional<Try<T>>), raise, cancel
 // group: via, then, onError...
 // group: timeout
@@ -59,7 +57,7 @@ Future<I> reduce(I&& initial, F&& func);
 
 ```
 ![asf](images/promise_future.png)
-#async/await
+# async/await
 
 
-#channel
+# channel
