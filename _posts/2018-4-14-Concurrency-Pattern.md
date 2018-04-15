@@ -76,6 +76,39 @@ Prons:
 [folly/fututre api](https://github.com/facebook/folly/blob/master/folly/futures/Future.h) 
 [example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
 
+```html
+<html>
+<head> 
+<script>
+function taskA() {
+    console.log("Task A");
+    throw new Error("throw Error Task A")
+}
+function taskB() {
+    console.log("Task B");
+}
+function onRejected(error) {
+    console.log("Catch Error: ", error);
+}
+function finalTask() {
+    console.log("Final Task");
+    throw new Error("throw Error Final task")
+}
+
+var promiseB = new Promise((resolve, reject) => reject(new Error('error msg')))
+promiseB
+.then(success => console.log('onfulfilled ', success), err => console.log('onRejected ', err))
+.then(taskA)
+.then(taskB)
+.catch(onRejected)
+.then(finalTask);
+</script>
+</head>
+<body>
+</body>
+</html>
+```
+
 ![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
 
 ## Cons:
