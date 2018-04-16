@@ -192,6 +192,38 @@ step1(t1, context1) // context1 is a context including next cod
 - use sync logic to write async code
 
 # Channel
+``` Go
+package main
+import "fmt"
+import "time"
+
+func main() {
+    c1 := make(chan string)
+    go func() {
+        c1 <- "ping from 1"
+    }()
+
+    c2 := make(chan int)
+    go func() {
+        c2 <- 2
+    }()
+
+    // time.Sleep(100 * time.Millisecond)
+    // case is chosen randomly
+    for i := 0; i < 2; i++ {
+        select {
+        case msg1 := <-c1:
+            fmt.Println(msg1)
+        case msg2 := <-c2:
+            fmt.Println(msg2)
+        case <-time.After(time.Second * 30):
+            fmt.Println("timeOut")
+            // default: // if no default, block
+            //  fmt.Println("non block")
+        }
+    }
+}
+```
 
 # Summary
 ![Outline](https://github.com/pzhp/pzhp.github.io/blob/master/images/concurrency_pattern.png)
