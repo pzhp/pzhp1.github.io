@@ -5,7 +5,7 @@ date:   2018-4-14 16:24:00
 categories: C++,javascript,go
 ---
 
-Concurrency is not only about execute task by multi-thread/coroutines, but also about execute task by event loop (javascript) or select/epoll function. In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel.
+In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript Go etc.
 
 # Callback
 Before talked about callback, give an example about poll.
@@ -224,6 +224,15 @@ func main() {
     }
 }
 ```
+
+``` C++
+// consider use c++11 implement previous code
+std::future<std::string> f = std::async(std::launch::async, []() { 
+	return dotask();
+	})
+std::string ret = f.get(); // block
+```
+C++ future only support set value once, but channel support tranfer data like a stream.
 
 # Summary
 ![Outline](https://github.com/pzhp/pzhp.github.io/blob/master/images/concurrency_pattern.png)
