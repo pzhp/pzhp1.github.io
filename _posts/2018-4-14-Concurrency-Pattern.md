@@ -5,27 +5,27 @@ date:   2018-4-14 16:24:00
 categories: C++,javascript,go
 ---
 
-In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript Go etc.
+In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on what and why. 
 
 # Callback
-Before talked about callback, give an example about poll.
+Before talked about callback, give an example about push/pull. in some extent, callback is push.
 ```C++
 // main thread
 auto result = sendTasktoWorkThread(task); // execute in other thread
 doOtherthing();
-auto value = result.get(); // block
+auto value = result.get(); // [pull the result]
 doRemainedthing(value);
 ```
 
 ```C++
 // when task done, call callback in worker thread directly
-// or send event to main thread which execute call callback then 
+// or send event to main thread which execute call callback then [push the result]
 sendTasktoWorkThread(task, callback); 
 doOtherthing();
 eventloop();
-
-
-// callback hell
+```
+Let's see an example involved register many callbacks.
+```c++
 #include <iostream>
 
 #define DEFINE_STEP_N(n) \
@@ -65,17 +65,17 @@ int main() {
 5
 last 
 ```
-
-Prons:
-- callback hell
-- lifecyle manage
-- executor/thread manage
-
-
+## Prons and cons:
+- callback hell as previous example show: 
+  it's really counter-intuitive thing to register callback.
+- lifecyle manage: 
+  need keep the object involved in callback not destructed before call in lanugage not supporting garbage collect.
+- executor/thread schedule:
+  schedule the callback in original main thread, or in current worker thread. If run in current worker thread, should have additional mutex to avoid data race in the callback.
+  
 # Promise/future
 [folly/fututre api](https://github.com/facebook/folly/blob/master/folly/futures/Future.h) 
 [example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
-
 ```html
 <html>
 <head> 
@@ -111,11 +111,10 @@ promiseB
 
 ![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
 
-## Cons:
+## Pros and cons:
 - chained then with arguments
 
 # Async/await
-## Case study
 [javascript promise and async/await](https://segmentfault.com/a/1190000007535316)
 ```javascript
 function takeLongTime(n) {
@@ -177,18 +176,7 @@ doItByAwait();
 ```
 [async & await 的前世今生: C#](https://www.cnblogs.com/qixuejia/p/5740508.html)
 
-## Understand from [continuation](https://en.wikipedia.org/wiki/Continuation)
-```c++
-step1(t1)
-step2(t2)
-step3(t3)
-
-// transform
-
-step1(t1, context1) // context1 is a context including next cod
-
-```
-## Pros
+## Prons and cons
 - use sync logic to write async code
 
 # Channel
@@ -231,6 +219,7 @@ std::future<std::string> f = std::async(std::launch::async, []() {
 	return dotask();
 	})
 std::string ret = f.get(); // block
+// f.wait_for(); // support time out
 ```
 C++ future only support set value once, but channel support tranfer data like a stream.
 
