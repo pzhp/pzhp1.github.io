@@ -115,8 +115,8 @@ promiseB
 </body>
 </html>
 ```
-C++ has a standard implement, and Facebook also has a implement[folly/futures](https://github.com/facebook/folly/blob/master/folly/futures/Future.h). 
-and [example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
+C++ has a standard implement, and Facebook also has a implement [folly/futures](https://github.com/facebook/folly/blob/master/folly/futures/Future.h).  
+Here is an [example](https://www.oschina.net/translate/futures-for-c-11-at-facebook).
 ![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png) 
 
 ## Pros and cons:
@@ -168,11 +168,18 @@ doIt();
 - Javascript ES7 support it [javascript promise and async/await](https://segmentfault.com/a/1190000007535316). 
 - C++ has a [proposal](https://isocpp.org/files/papers/N3858.pdf).
 Here is just a summary from [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html)
+``` C#
+public async Task DoSomethingAsync()
+{
+  // think of “await” as an “asynchronous wait”. wait until the awaitbale function has a result.
+  await Task.Delay(100);
+  // remained code is executed in the captured context before await after await finished.
+}
+```
+Note:
+Await can apply to any awaitable type like Task<T> in C#, not only async function
+**Context**
 
-
-## Prons and cons
-- Use sync logic to write async code
-- The continuation is scheduled on specific context.
 >In the overview, I mentioned that when you await a built-in awaitable, then the awaitable will capture the current “context” and later >apply it to the remainder of the async method. What exactly is that “context”?
 >Simple answer:
 >
@@ -208,8 +215,16 @@ private async Task DownloadFileAsync(string fileName)
   // The second call to ConfigureAwait(false) is not *required*, but it is Good Practice.
 }
 ```
+## Prons and cons
+- Use sync logic to write async code
+- The continuation is scheduled on specific context.
 
 # Channel
+
+>Do not communicate by sharing memory; instead, share memory by communicating.
+>
+>--Effective Go
+
 ``` Go
 package main
 import "fmt"
@@ -242,7 +257,26 @@ func main() {
     }
 }
 ```
+You can treat channel as linux pipeline. 
+Another system language [Rust](https://doc.rust-lang.org/book/) also support message passing style concurrency.
+```Rust ++
+use std::thread;
+use std::sync::mpsc;
 
+fn main() {
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        let val = String::from("hi");
+        tx.send(val).unwrap();
+    });
+
+    let received = rx.recv().unwrap();
+    println!("Got: {}", received);
+}
+```
+
+Here is C++ example to re-write above example.
 ``` C++
 // consider use c++11 implement previous code
 std::future<std::string> f = std::async(std::launch::async, []() { 
@@ -256,7 +290,6 @@ C++ future only support set value once, but channel support tranfer data like a 
 # Summary
 ![Outline](https://github.com/pzhp/pzhp.github.io/blob/master/images/concurrency_pattern.png)
 
-remained issues: executor/thread schedule, exception etc.
 
 
 
