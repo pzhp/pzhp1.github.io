@@ -5,7 +5,14 @@ date:   2018-4-14 16:24:00
 categories: C++,javascript,go,concurrency
 ---
 
-In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on *WHAT* and *WHY*. 
+In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on **WHAT** and **WHY**.
+
+Parrtern | Language
+-------- | --------
+CallBack | C++
+Promise/future | Javascript
+Async/await | C#
+Channel | Go
 
 # Callback
 Before talked about callback, give an example about push/pull. in some extent, callback is push.
@@ -113,10 +120,7 @@ In addition, C++ has a standard implement, Facebook also has [folly/futures](htt
 ## Pros and cons:
 - Simplify the process on register then functions, easily chain then functions.
 - Simplify the communication between main thread and worker thread. Promise set value/exception, future get value/exception.
-- When then functions need multi arguments, it's hard to write.
-
-# Async/await
-async/await pattern comes from C#[async & await 的前世今生: C#](https://www.cnblogs.com/qixuejia/p/5740508.html). Javascript ES7 support it[javascript promise and async/await](https://segmentfault.com/a/1190000007535316). There is a [proposal](https://isocpp.org/files/papers/N3858.pdf) about it in C++.
+- When then functions need multi arguments, it's hard to write, as follow example:
 ```javascript
 function takeLongTime(n) {
     return new Promise(resolve => {
@@ -154,32 +158,56 @@ function doIt() {
         });
 }
 
-// doIt();
-
-console.log("................")
-
-async function doItByAwait() {
-    console.time("doIt");
-    const time1 = 300;
-	console.log("before step1")
-    // block util step1() done
-    const time2 = await step1(time1);
-	console.log("before step2")
-    const time3 = await step2(time2);
-	console.log("before step3")
-    const result = await step3(time3);
-	console.log("before end")
-    console.log(`result is ${result}`);
-    console.timeEnd("doIt");
-}
-
-doItByAwait();
+doIt();
 ```
 
+# Async/await
+async/await pattern comes from C#[Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html). Javascript ES7 support it [javascript promise and async/await](https://segmentfault.com/a/1190000007535316). There is a [proposal](https://isocpp.org/files/papers/N3858.pdf) about it in C++.
+
+
+Javascript async/await features:
+In some extent, async/await is wrapper for promise/future pattern.
+Async function return a Promise.
+Await only used in async function.
 
 ## Prons and cons
 - Use sync logic to write async code
-- The continuation is scheduled on main thread or worker thread based on the setting. Check it in [C# implement](https://www.cnblogs.com/qixuejia/p/5740508.html).
+- The continuation is scheduled on specific context. Check it in [C# Async and await](https://blog.stephencleary.com/2012/02/async-and-await.html). Here is a short summary
+>In the overview, I mentioned that when you await a built-in awaitable, then the awaitable will capture the current “context” and later >apply it to the remainder of the async method. What exactly is that “context”?
+>Simple answer:
+>
+>If you’re on a UI thread, then it’s a UI context.
+>If you’re responding to an ASP.NET request, then it’s an ASP.NET request context.
+>Otherwise, it’s usually a thread pool context.
+>Complex answer:
+>
+>If SynchronizationContext.Current is not null, then it’s the current SynchronizationContext. (UI and ASP.NET request contexts are >SynchronizationContext contexts).
+>Otherwise, it’s the current TaskScheduler (TaskScheduler.Default is the thread pool context).
+```C#
+// WinForms example (it works exactly the same for WPF).
+private async void DownloadFileButton_Click(object sender, EventArgs e)
+{
+  // Since we asynchronously wait, the UI thread is not blocked by the file download.
+  await DownloadFileAsync(fileNameTextBox.Text);
+
+  // Since we resume on the UI context, we can directly access UI elements.
+  resultTextBox.Text = "File downloaded!";
+}
+
+private async Task DownloadFileAsync(string fileName)
+{
+  // Use HttpClient or whatever to download the file contents.
+  var fileContents = await DownloadFileContentsAsync(fileName).ConfigureAwait(false);
+
+  // Note that because of the ConfigureAwait(false), we are not on the original context here.
+  // Instead, we're running on the thread pool.
+
+  // Write the file contents out to a disk file.
+  await WriteToDiskAsync(fileName, fileContents).ConfigureAwait(false);
+
+  // The second call to ConfigureAwait(false) is not *required*, but it is Good Practice.
+}
+```
 
 # Channel
 ``` Go
