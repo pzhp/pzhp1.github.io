@@ -5,9 +5,9 @@ date:   2018-4-14 16:24:00
 categories: C++,javascript,go,concurrency
 ---
 
-In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on **WHAT** and **WHY**.
+In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program languages supoort these patterns partially or fully. We will study them from an evolutionary perspective.
 
-Parrtern | Language
+Parttern | Language
 -------- | --------
 CallBack | C++
 Promise/future | Javascript
@@ -15,7 +15,7 @@ Async/await | C#
 Channel | Go
 
 # Callback
-Before talked about callback, give an example about push/pull. in some extent, callback is push.
+Before talked about callback, give an example about push/pull. In some extent, callback is push.
 ```C++
 // main thread
 auto result = sendTasktoWorkThread(task); // execute in other thread
@@ -31,7 +31,8 @@ sendTasktoWorkThread(task, callback);
 doOtherthing();
 eventloop();
 ```
-Let's see an example involved register many callbacks.
+
+What if register many callbacks nestedly?
 ```c++
 #include <iostream>
 
@@ -73,14 +74,15 @@ int main() {
 last 
 ```
 ## Prons and cons:
-- callback hell as previous example show: 
+- Callback hell as previous example show: 
   it's really counter-intuitive thing to register callback.
-- lifecyle manage: 
+- Lifecyle manage: 
   need keep the object involved in callback not destructed before call in lanugage not supporting garbage collect.
-- executor/thread schedule:
-  schedule the callback in original main thread, or in current worker thread. If run in current worker thread, should have additional mutex to avoid data race in the callback.
+- Context schedule:
+  schedule the callback in original context, or in current worker context. If run in current worker context, should have additional mutex to avoid data race in the callback.
   
 # Promise/future
+Here is an example from Javascript.
 ```html
 <html>
 <head> 
@@ -113,9 +115,9 @@ promiseB
 </body>
 </html>
 ```
-In addition, C++ has a standard implement, Facebook also has [folly/futures](https://github.com/facebook/folly/blob/master/folly/futures/Future.h). 
-![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
-[example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
+C++ has a standard implement, and Facebook also has a implement[folly/futures](https://github.com/facebook/folly/blob/master/folly/futures/Future.h). 
+and [example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
+![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png) 
 
 ## Pros and cons:
 - Simplify the process on register then functions, easily chain then functions.
@@ -162,17 +164,15 @@ doIt();
 ```
 
 # Async/await
-async/await pattern comes from C#[Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html). Javascript ES7 support it [javascript promise and async/await](https://segmentfault.com/a/1190000007535316). There is a [proposal](https://isocpp.org/files/papers/N3858.pdf) about it in C++.
+- Async/await pattern comes from C# [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html). 
+- Javascript ES7 support it [javascript promise and async/await](https://segmentfault.com/a/1190000007535316). 
+- C++ has a [proposal](https://isocpp.org/files/papers/N3858.pdf).
+Here is just a summary from [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html)
 
-
-Javascript async/await features:
-In some extent, async/await is wrapper for promise/future pattern.
-Async function return a Promise.
-Await only used in async function.
 
 ## Prons and cons
 - Use sync logic to write async code
-- The continuation is scheduled on specific context. Check it in [C# Async and await](https://blog.stephencleary.com/2012/02/async-and-await.html). Here is a short summary
+- The continuation is scheduled on specific context.
 >In the overview, I mentioned that when you await a built-in awaitable, then the awaitable will capture the current “context” and later >apply it to the remainder of the async method. What exactly is that “context”?
 >Simple answer:
 >
