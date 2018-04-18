@@ -2,10 +2,10 @@
 layout: post
 title:  "Concurrency pattern"
 date:   2018-4-14 16:24:00
-categories: C++,javascript,go
+categories: C++,javascript,go,concurrency
 ---
 
-In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on what and why. 
+In this paper, we disucss the concurrency pattern changed from callback, promise/future, to async/await and channel. Many program language supoort these patterns partially or fully. We will study the key idea across C++, Javascript, Go etc and focus on *WHAT* and *WHY*. 
 
 # Callback
 Before talked about callback, give an example about push/pull. in some extent, callback is push.
@@ -74,8 +74,6 @@ last
   schedule the callback in original main thread, or in current worker thread. If run in current worker thread, should have additional mutex to avoid data race in the callback.
   
 # Promise/future
-[folly/fututre api](https://github.com/facebook/folly/blob/master/folly/futures/Future.h) 
-[example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
 ```html
 <html>
 <head> 
@@ -108,14 +106,17 @@ promiseB
 </body>
 </html>
 ```
-
+In addition, C++ has a standard implement, Facebook also has [folly/futures](https://github.com/facebook/folly/blob/master/folly/futures/Future.h). 
 ![folly/future](https://github.com/pzhp/pzhp.github.io/blob/master/images/promise_future.png)
+[example](https://www.oschina.net/translate/futures-for-c-11-at-facebook)
 
 ## Pros and cons:
-- chained then with arguments
+- Simplify the process on register then functions, easily chain then functions.
+- Simplify the communication between main thread and worker thread. Promise set value/exception, future get value/exception.
+- When then functions need multi arguments, it's hard to write.
 
 # Async/await
-[javascript promise and async/await](https://segmentfault.com/a/1190000007535316)
+async/await pattern comes from C#[async & await 的前世今生: C#](https://www.cnblogs.com/qixuejia/p/5740508.html). Javascript ES7 support it[javascript promise and async/await](https://segmentfault.com/a/1190000007535316). There is a [proposal](https://isocpp.org/files/papers/N3858.pdf) about it in C++.
 ```javascript
 function takeLongTime(n) {
     return new Promise(resolve => {
@@ -174,10 +175,11 @@ async function doItByAwait() {
 
 doItByAwait();
 ```
-[async & await 的前世今生: C#](https://www.cnblogs.com/qixuejia/p/5740508.html)
+
 
 ## Prons and cons
-- use sync logic to write async code
+- Use sync logic to write async code
+- The continuation is scheduled on main thread or worker thread based on the setting. Check it in [C# implement](https://www.cnblogs.com/qixuejia/p/5740508.html).
 
 # Channel
 ``` Go
