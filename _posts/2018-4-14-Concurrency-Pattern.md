@@ -123,6 +123,7 @@ Here is an [example](https://www.oschina.net/translate/futures-for-c-11-at-faceb
 - Simplify the process on register then functions, easily chain then functions.
 - Simplify the communication between main thread and worker thread. Promise set value/exception, future get value/exception.
 - When then functions need multi arguments, it's hard to write, as follow example:
+
 ```javascript
 function takeLongTime(n) {
     return new Promise(resolve => {
@@ -167,6 +168,7 @@ doIt();
 - Async/await pattern comes from C# [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html). 
 - Javascript ES7 support it [javascript promise and async/await](https://segmentfault.com/a/1190000007535316). 
 - C++ has a [proposal](https://isocpp.org/files/papers/N3858.pdf).
+
 Here is just a summary from [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html)
 ``` C#
 public async Task DoSomethingAsync()
