@@ -77,7 +77,7 @@ last
 - Callback hell as previous example show: 
   it's really counter-intuitive thing to register callback.
 - Lifecyle manage: 
-  need keep the object involved in callback not destructed before call in lanugage not supporting garbage collect.
+  need keep the object involved in callback not destructed before call in lanugage not supporting garbage collect. Refer to [Lifetime Safety By Default](https://github.com/CppCon/CppCon2016/blob/master/Presentations/Lifetime%20Safety%20By%20Default%20-%20Making%20Code%20Leak-Free%20by%20Construction/Lifetime%20Safety%20By%20Default%20-%20Making%20Code%20Leak-Free%20by%20Construction%20-%20Herb%20Sutter%20-%20CppCon%202016.pdf) for more details.
 - Context schedule:
   schedule the callback in original context, or in current worker context. If run in current worker context, should have additional mutex to avoid data race in the callback.
   
