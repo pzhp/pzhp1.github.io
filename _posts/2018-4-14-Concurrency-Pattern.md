@@ -170,12 +170,14 @@ doIt();
 - C++ has a [proposal](https://isocpp.org/files/papers/N3858.pdf).
 
 Here is just a summary from [Async and Await](https://blog.stephencleary.com/2012/02/async-and-await.html)
+The beginning of an async method is executed just like any other method. That is, it runs synchronously until it hits an “await” (or throws an exception).If “await” sees that the awaitable has not completed, then it acts asynchronously. It tells the awaitable to run the remainder of the method when it completes, and then returns from the async method.Later on, when the awaitable completes, it will execute the remainder of the async method. If you’re awaiting a built-in awaitable (such as a task), then the remainder of the async method will execute on a “context” that was captured before the “await” returned.
+
 ``` C#
 public async Task DoSomethingAsync()
 {
   // think of “await” as an “asynchronous wait”. wait until the awaitbale function has a result.
   await Task.Delay(100);
-  // remained code is executed in the captured context before await after await finished.
+  // remained code is executed in the captured context before the “await” returned.
 }
 ```
 Note:
