@@ -1,0 +1,88 @@
+** case 1 **
+
+```
+package main
+
+import (
+    "fmt"
+)
+
+type Login interface {
+	Login()
+}
+
+
+type User struct {
+    Name   string
+    Gender string
+}
+
+func (user *User) Login() {
+    fmt.Println("Login to the system")
+}
+
+type Manager struct {
+    *User  // collect method set based on pointer object rule: all T and T* receiver methods
+    Position string
+}
+
+func main() {
+    var l Login
+    l = Manager{
+        User: &User{
+            Name:   "TestUser1",
+            Gender: "gender",
+        },
+        Position: "admin",
+    }
+
+    l.Login() // PASS
+}
+```
+
+** case 2 **
+
+```
+type Manager struct {
+    User  // collect method set based on  object rule: all T receiver methods
+    Position string
+}
+
+func main() {
+    var l Login
+    l = Manager{
+        User: User{
+            Name:   "TestUser1",
+            Gender: "gender",
+        },
+        Position: "admin",
+    }
+
+    l.Login() // Manager does not implement Login (Login method has pointer receiver)
+}
+```
+
+
+** case 3 **
+
+```
+type Manager struct {
+    User
+    Position string
+}
+
+func main() {
+    var l Login
+    l = &Manager{
+        User: User{
+            Name:   "TestUser1",
+            Gender: "gender",
+        },
+        Position: "admin",
+    }
+
+    l.Login() // PASS
+}
+```
+
+
