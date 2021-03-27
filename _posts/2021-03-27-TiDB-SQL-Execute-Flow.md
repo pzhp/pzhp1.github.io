@@ -9,10 +9,16 @@ categories: TiDB,SQL,Design
 
 - 1）Session -> RecordSet -> Plan(LogicalPlan, PhysicalPlan) -> Executor
 - 2）Pull Model： Volcano Model： Open/Next/Close
-     Push Model： stream compute
+     [Push Model](https://zhuanlan.zhihu.com/p/41562506)： 
+     	- stream compute 
+     	- hard to handle flow operator: limit etc.
+     Mixed Model:
+     	callback in pull model ->  push model
+     JIT： 即时编译， lLVM
 - 3）About compute [decimal]:  
-- 4）About Join:  HashJoin/Sort Merge Join/
+- 4）About Join:  Hash Join/Sort Merge Join/
 
+# Execute Flow:
 ```
 session.Execute(ctx context.Context, sql string)  // (recordSets []sqlexec.RecordSet, err error)
 	s.Parse(ctx, sql) 
