@@ -8,13 +8,14 @@ categories: TiDB,SQL,Design
 # Some Points：
 
 - 1）Session -> RecordSet -> Plan(LogicalPlan, PhysicalPlan) -> Executor
-- 2）Pull Model： Volcano Model： Open/Next/Close
-     [Push Model](https://zhuanlan.zhihu.com/p/41562506)： 
-     	- stream compute 
-     	- hard to handle flow operator: limit etc.
-     Mixed Model:
-     	callback in pull model ->  push model
-     JIT： 即时编译， lLVM
+- 2）[Execute mode](https://zhuanlan.zhihu.com/p/41562506)
+   - Pull Model： Volcano Model： Open/Next/Close
+   - Push Model： 
+      - stream compute 
+      - hard to handle flow operator: limit etc.
+   - Mixed Model:
+      - callback in pull model ->  push model
+   - JIT： 即时编译， lLVM
 - 3）About compute [decimal]:  
 - 4）About Join:  Hash Join/Sort Merge Join/
 
@@ -40,7 +41,6 @@ session.Execute(ctx context.Context, sql string)  // (recordSets []sqlexec.Recor
 					b := newExecutorBuilder(ctx, a.InfoSchema)
 					e := b.build(a.Plan)
 				err = e.Open(ctx)
-![image](https://user-images.githubusercontent.com/5364483/112707989-335a9d00-8eea-11eb-9c33-b9e92ee8eed3.png)
 ```
 
 
