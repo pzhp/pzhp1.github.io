@@ -224,6 +224,12 @@ private async Task DownloadFileAsync(string fileName)
 - Use sync logic to write async code
 - The continuation is scheduled on specific context.
 
+# Sender&receiver: unified executor
+	
+[C++ Executors](https://mysteriouspreserve.com/blog/2021/11/12/A-Brief-Talk-About-The-Cpp-Executors/)
+	- Sender construct: more like **DAG**:  
+	- Run task in GPU or remote system
+	
 # Channel
 
 >Do not communicate by sharing memory; instead, share memory by communicating.
@@ -292,6 +298,9 @@ std::string ret = f.get(); // block
 ```
 C++ future only support set value once, but channel support tranfer data like a stream.
 
+
+	
+	
 # Summary
 ![Outline](https://github.com/pzhp/pzhp.github.io/blob/master/images/concurrency_pattern.png)
 
