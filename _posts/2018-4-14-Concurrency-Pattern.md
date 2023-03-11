@@ -227,7 +227,8 @@ private async Task DownloadFileAsync(string fileName)
 # Sender&receiver: unified executor
 	
 [C++ Executors](https://mysteriouspreserve.com/blog/2021/11/12/A-Brief-Talk-About-The-Cpp-Executors/)
-	- Sender construct: more like **DAG**:  
+	
+	- Sender construct: more like **DAG**
 	- Run task in GPU or remote system
 	
 # Channel
